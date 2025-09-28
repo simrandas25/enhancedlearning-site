@@ -1,11 +1,10 @@
 [build]
   base = "fenago21"
-  command = "npm ci && npm run build"
+  command = "npm ci --legacy-peer-deps && npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20.11.1"
-  NPM_FLAGS = "--loglevel verbose --legacy-peer-deps"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
