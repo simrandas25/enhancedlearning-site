@@ -7,11 +7,14 @@ import config from "@/config";
 export async function generateMetadata({
   params,
 }: {
-  params: { categoryId: string };
+  params: Promise<{ categoryId: string }>;
 }) {
-  const category = categories.find(
-    (category) => category.slug === params.categoryId
-  );
+  const { categoryId } = await params;
+  const category = categories.find((category) => category.slug === categoryId);
+
+  if (!category) {
+    return getSEOTags({ title: "Category not found", description: "" });
+  }
 
   return getSEOTags({
     title: `${category.title} | Blog by ${config.appName}`,
@@ -23,20 +26,27 @@ export async function generateMetadata({
 export default async function Category({
   params,
 }: {
-  params: { categoryId: string };
+  params: Promise<{ categoryId: string }>;
 }) {
-  const category = categories.find(
-    (category) => category.slug === params.categoryId
-  );
+  const { categoryId } = await params;
+  const category = categories.find((category) => category.slug === categoryId);
   const articlesInCategory = articles
     .filter((article) =>
-      article.categories.map((c) => c.slug).includes(category.slug)
+      article.categories.map((c) => c.slug).includes(category?.slug ?? "")
     )
     .sort(
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     )
     .slice(0, 3);
+
+  if (!category) {
+    return (
+      <div className="py-16">
+        <h1 className="text-3xl font-bold">Category not found</h1>
+      </div>
+    );
+  }
 
   return (
     <>
