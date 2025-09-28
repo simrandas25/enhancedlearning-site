@@ -6,40 +6,6 @@ import Avatar from "../_assets/components/Avatar";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ articleId: string }>;
-}) {
-  const { articleId } = await params;
-  const article = articles.find((article) => article.slug === articleId);
-
-  if (!article) {
-    return getSEOTags({ title: "Article not found", description: "" });
-  }
-
-  return getSEOTags({
-    title: article.title,
-    description: article.description,
-    canonicalUrlRelative: `/blog/${article.slug}`,
-    extraTags: {
-      openGraph: {
-        title: article.title,
-        description: article.description,
-        url: `/blog/${article.slug}`,
-        images: [
-          {
-            url: article.image.urlRelative,
-            width: 1200,
-            height: 660,
-          },
-        ],
-        locale: "en_US",
-        type: "website",
-      },
-    },
-  });
-}
 
 export default async function Article({
   params,

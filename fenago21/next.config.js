@@ -1,6 +1,5 @@
-const path = require('path');
-
 /** @type {import('next').NextConfig} */
+const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -12,10 +11,7 @@ const nextConfig = {
       'logos-world.net',
     ],
   },
-  experimental: {
-    // Tell Next where the monorepo/project root is so it picks the right lockfile
-    outputFileTracingRoot: path.resolve(__dirname, '..'),
-  },
+  outputFileTracingRoot: path.resolve(__dirname, '..'),
 };
 
 module.exports = nextConfig;

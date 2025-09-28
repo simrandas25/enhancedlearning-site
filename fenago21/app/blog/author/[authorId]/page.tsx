@@ -7,9 +7,14 @@ import config from "@/config";
 export async function generateMetadata({
   params,
 }: {
-  params: { authorId: string };
+  params: Promise<{ authorId: string }>;
 }) {
-  const author = authors.find((author) => author.slug === params.authorId);
+  const { authorId } = await params;
+  const author = authors.find((author) => author.slug === authorId);
+
+  if (!author) {
+    return getSEOTags({ title: "Author not found", description: "" });
+  }
 
   return getSEOTags({
     title: `${author.name}, Author at ${config.appName}'s Blog`,
@@ -21,15 +26,24 @@ export async function generateMetadata({
 export default async function Author({
   params,
 }: {
-  params: { authorId: string };
+  params: Promise<{ authorId: string }>;
 }) {
-  const author = authors.find((author) => author.slug === params.authorId);
+  const { authorId } = await params;
+  const author = authors.find((author) => author.slug === authorId);
   const articlesByAuthor = articles
-    .filter((article) => article.author.slug === author.slug)
+    .filter((article) => article.author.slug === (author?.slug ?? ""))
     .sort(
       (a, b) =>
         new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf()
     );
+
+  if (!author) {
+    return (
+      <div className="py-16">
+        <h1 className="text-3xl font-bold">Author not found</h1>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -42,9 +56,7 @@ export default async function Author({
             {author.name}
           </h1>
           <p className="md:text-lg mb-6 md:mb-10 font-medium">{author.job}</p>
-          <p className="md:text-lg text-base-content/80">
-            {author.description}
-          </p>
+          <p className="md:text-lg text-base-content/80">{author.description}</p>
         </div>
 
         <div className="max-md:order-first flex md:flex-col gap-4 shrink-0">
@@ -62,7 +74,7 @@ export default async function Author({
               {author.socials.map((social) => (
                 <a
                   key={social.name}
-                  href={social.url}
+                  href={ social.url}
                   className="btn btn-square"
                   // Using a dark theme? -> className="btn btn-square btn-neutral"
                   title={`Go to ${author.name} profile on ${social.name}`}
